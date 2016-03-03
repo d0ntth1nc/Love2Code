@@ -65,13 +65,17 @@ function processRequest( request, response ) {
 
     readData( request, ( error, data ) => {
         var event = "";
+        var url = parseUrl( request.url );
 
-        if ( request.method === "GET" && extname( request.url ) ) {
-            event = "file";
-        } else if ( error ) {
+        if ( error ) {
             event = "error";
+            this.emit( event, url, error, callback );
+        } else if ( request.method === "GET" && extname( request.url ) ) {
+            event = "file";
+            this.emit( event, url, callback );
         } else {
             event = "request";
+            this.emit( event, url, data, callback );
         }
 
         if ( this.listenerCount( event ) === 0 ) {
@@ -79,22 +83,6 @@ function processRequest( request, response ) {
             response.writeHead( 400 );
             response.end();
             return;
-        }
-
-        var url = parseUrl( request.url );
-        var emit = this.emit.bind( this, event, url );
-
-        switch ( event ) {
-            case "file":
-                emit( callback );
-                break;
-            case "request":
-                emit( data, callback );
-                break;
-            case "error":
-                emit( error, callback );
-                break;
-            default: // shouldnt happen
         }
 
         function callback( headers, body ) {
