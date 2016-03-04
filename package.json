@@ -4,12 +4,13 @@
   "description": "Realtime web application",
   "main": "index.js",
   "scripts": {
-    "start": "node --harmony ./lib/node.js",
+    "start": "node --trace_opt --trace_deopt --allow-natives-syntax ./lib/node.js",
+    "start-notrace": "node ./lib/node.js",
     "build-node": "webpack --colors --display-error-details --config webpack/node.js",
     "build-browser": "webpack --colors --display-error-details --config webpack/browser.js",
     "build": "concurrently \"npm run build-node\" \"npm run build-browser\"",
     "debug-node": "webpack --watch --verbose --colors --display-error-details --config webpack/debug-node.js",
-    "debug-node-start": "node node_modules/just-wait --pattern \"lib/*.js\" && npm run start",
+    "debug-node-start": "node node_modules/just-wait --pattern \"lib/*.js\" && npm run start-notrace",
     "debug-browser": "webpack-dev-server --config webpack/debug-browser.js",
     "debug": "concurrently --kill-others \"npm run debug-node-start\" \"npm run debug-node\" \"npm run debug-browser\""
   },
@@ -35,7 +36,8 @@
     "babel-polyfill": "^6.6.1",
     "mime": "^1.3.4",
     "react": "^0.14.7",
-    "react-dom": "^0.14.7"
+    "react-dom": "^0.14.7",
+    "websocket": "^1.0.22"
   },
   "devDependencies": {
     "babel": "^6.5.2",

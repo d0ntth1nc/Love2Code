@@ -9,7 +9,7 @@ const webpack = require( "webpack" );
 const config = require( "./browser.js" );
 
 const HOSTNAME = process.env.HOSTNAME || "localhost";
-const PORT = 9901;
+const PORT = 8080;
 const URL = `http://${HOSTNAME}:${PORT}`;
 
 module.exports = config;
@@ -18,11 +18,11 @@ config.cache = true;
 config.debug = true;
 config.devtool = "cheap-module-eval-source-map";
 config.entry.unshift( `webpack-dev-server/client?${URL}`, "webpack/hot/only-dev-server" );
-config.output.publicPath = `${URL}/src`;
+config.output.publicPath = `${URL}/lib`;
 config.output.hotUpdateMainFilename  = "update/[hash]/update.json";
 config.output.hotUpdateChunkFilename = "update/[hash]/[id].update.js";
 config.devServer = {
-	publicPath: `${URL}/src`,
+	publicPath: `${URL}/lib`,
 	hot: true,
 	inline: false,
 	lazy: false,

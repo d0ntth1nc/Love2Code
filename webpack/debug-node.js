@@ -9,14 +9,14 @@ const webpack = require( "webpack" );
 const config = require( "./node.js" );
 
 const HOSTNAME = process.env.HOSTNAME || "localhost";
-const PORT = 9901;
+const PORT = 8080;
 
 module.exports = config;
 
 config.cache = true;
 config.debug = true;
 config.entry.unshift( "webpack/hot/poll?1000" );
-config.output.publicPath = `http://${HOSTNAME}:${PORT}/lib/browser`;
+config.output.publicPath = `http://${HOSTNAME}:${PORT}/lib`;
 config.plugins = [
 	new webpack.DefinePlugin( {
         __CLIENT__: false,

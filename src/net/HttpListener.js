@@ -30,10 +30,11 @@ class HttpServer extends EventEmitter {
      * @param  {Function} listener
      * @return {EventEmitter} Current instance
      */
-    on( event: string, listener: Function ) {
+    on( event: string, listener: Function ): HttpServer {
         if ( this.listeners( event ) > 0 ) {
             throw Error( "Cannot add more than 1 listener for event" );
         }
+        
         return super.on( event, listener );
     }
 
@@ -42,10 +43,11 @@ class HttpServer extends EventEmitter {
      * @param  {Number} port - Port where to listen for http requests
      * @return {HttpServer} Current instance
      */
-    listen( port: number ) {
+    listen( port: number ): HttpServer {
         if ( this._listening ) {
             throw Error( "Server is already listening" );
         }
+
         this._listener = createServer( processRequest.bind( this ) );
         this._listener.listen( port );
         this._listening = true;
@@ -60,7 +62,7 @@ class HttpServer extends EventEmitter {
  * @param  {http.ServerResponse} response
  * @return {void}
  */
-function processRequest( request, response ) {
+function processRequest( request: Object, response: Object ): void {
     log.info( `request to ${request.url}` );
 
     readData( request, ( error, data ) => {
@@ -85,8 +87,9 @@ function processRequest( request, response ) {
             return;
         }
 
-        function callback( headers, body ) {
-            response.writeHead( 200, headers );
+        // Body parameter must be always buffer in order to be monomorphic function
+        function callback( status: number, headers: Object, body: Buffer ): void {
+            response.writeHead( status, headers );
             response.end( body );
             log.info( `response for ${request.url} with: ${body}` );
         }
@@ -99,19 +102,18 @@ function processRequest( request, response ) {
  * @param  {Function} callback
  * @return {void}
  */
-function readData( request, callback ) {
+function readData( request: Object, callback: Function ): void {
+    var dataString = "";
+
     if ( request.method !== "POST" && request.method !== "PUT" ) {
         callback( null, null );
         return;
     }
 
-    var dataString = "";
-
     request.on( "data", buffer => dataString += buffer.toString() );
     request.on( "end", function processData() {
         var data = null;
         var error = null;
-
         try {
             data = parseData( dataString, request.headers[ "content-type" ] );
         } catch ( err ) {
@@ -128,7 +130,7 @@ function readData( request, callback ) {
  * @param  {Number} type
  * @return {Object}
  */
-function parseData( dataString, contentType ) {
+function parseData( dataString: string, contentType: string ): Object {
     switch ( contentType ) {
         case "application/json": return JSON.parse( dataString );
         case "x-form-urlencoded": return parseQuerystring( dataString );
